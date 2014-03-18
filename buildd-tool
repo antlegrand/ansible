@@ -4,17 +4,18 @@
 
 #VERSION=
 #DVERSION=$(VERSION)-$(DEBIAN)
-NAME=ansible-devel_${DVERSION}
-VERSION=`cat ../.ansible.version`
-DVERSION=`cat ../.ansible.debian-version`
+SOURCE=ansible-devel
+NAME=$(SOURCE)_${DVERSION}
+VERSION=`cat ../.$(SOURCE).version`
+DVERSION=`cat ../.$(SOURCE).debian-version`
 version:
-	grep unstable debian/changelog | sed -r "s/.*\((.*)\) unstable.*/\1/g" | head -n 1 > ../.ansible.debian-version
-	cat ../.ansible.debian-version | sed -r "s/(.*)-.*/\1/g" > ../.ansible.version
+	grep unstable debian/changelog | sed -r "s/.*\((.*)\) unstable.*/\1/g" | head -n 1 > ../.$(SOURCE).debian-version
+	cat ../.$(SOURCE).debian-version | sed -r "s/(.*)-.*/\1/g" > ../.$(SOURCE).version
 clean:
 	python setup.py clean
 tar: clean version
-	 cd .. && tar czvf ansible_`cat .ansible.version`.orig.tar.gz ansible --exclude="ansible/debian" --exclude="ansible/.git*"
+	 cd .. && tar czvf $(SOURCE)_`cat .$(SOURCE).version`.orig.tar.gz $(SOURCE) --exclude="$(SOURCE)/debian" --exclude="$(SOURCE)/.git*"
 debuild: clean tar version
 	-debuild -S
 buildd: version debuild
-	echo "cd .. && scp $(NAME).debian.tar.gz $(NAME).dsc $(NAME)_source.build $(NAME)_source.changes ansible_$(VERSION).orig.tar.gz incoming@buildd:wheezy"
+	echo "cd .. && scp $(NAME).debian.tar.gz $(NAME).dsc $(NAME)_source.build $(NAME)_source.changes $(SOURCE)_$(VERSION).orig.tar.gz incoming@buildd:wheezy"

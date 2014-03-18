@@ -1,6 +1,28 @@
 #!/usr/bin/make -f
-# -- makefile --
 
-include /usr/share/cdbs/1/rules/debhelper.mk
-DEB_PYTHON_SYSTEM = pysupport
-include /usr/share/cdbs/1/class/python-distutils.mk
+%:
+	dh $@ --with python2 -Spython_distutils
+
+override_dh_fixperms:
+	chmod -R +x  "debian/ansible-devel/usr/share/ansible/"
+	dh_fixperms
+
+override_dh_auto_clean:
+	rm -rf html
+	dh_auto_clean
+
+override_dh_installchangelogs:
+	dh_installchangelogs CHANGELOG.md
+
+DEB_UPSTREAM_VERSION=$(shell dpkg-parsechangelog | sed -rne 's,^Version: ([^+]+).*,\1,p')
+get-orig-source:
+	uscan --noconf --force-download --rename --download-current-version --destdir=.
+	rm -rf ansible-$(DEB_UPSTREAM_VERSION)
+	tar -xf ansible_$(DEB_UPSTREAM_VERSION).orig.tar.gz
+	rm ansible_$(DEB_UPSTREAM_VERSION).orig.tar.gz
+	rm ansible-$(DEB_UPSTREAM_VERSION)/docsite/_static/jquery.js
+	rm ansible-$(DEB_UPSTREAM_VERSION)/docsite/_static/underscore.js
+	GZIP=--best tar -cz --owner root --group root --mode a+rX \
+		-f ansible_$(DEB_UPSTREAM_VERSION)+dfsg.orig.tar.gz \
+		ansible-$(DEB_UPSTREAM_VERSION)
+	rm -r ansible-$(DEB_UPSTREAM_VERSION)
