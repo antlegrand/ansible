@@ -2,9 +2,10 @@ Source: ansible-devel
 Section: admin
 Priority: optional
 Maintainer: Henry Graham (hzgraham) <Henry.Graham@mail.wvu.edu>
-Build-Depends: cdbs, debhelper (>= 5.0.0), asciidoc
-Standards-Version: 3.9.1
+Build-Depends: debhelper (>= 8.0.0~), asciidoc, python-support,	python-setuptools(>= 0.6)
+Standards-Version: 3.9.4
 Homepage: http://ansible.github.com/
+XS-Python-Version: >= 2.7
 
 Package: ansible-devel
 Architecture: all
