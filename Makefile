@@ -108,7 +108,7 @@ clean:
 	@echo "Cleaning up RPM building stuff"
 	rm -rf MANIFEST rpm-build
 	@echo "Cleaning up Debian building stuff"
-	rm -rf debian
+#	rm -rf debian
 	rm -rf deb-build
 	rm -rf docs/json
 	rm -rf docs/js

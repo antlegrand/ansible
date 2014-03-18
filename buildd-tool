@@ -1,0 +1,20 @@
+#!/usr/bin/make -f
+#VERSION=1.0.2
+#DEBIAN=1~dev
+
+#VERSION=
+#DVERSION=$(VERSION)-$(DEBIAN)
+NAME=ansible-devel_${DVERSION}
+VERSION=`cat ../.ansible.version`
+DVERSION=`cat ../.ansible.debian-version`
+version:
+	grep unstable debian/changelog | sed -r "s/.*\((.*)\) unstable.*/\1/g" | head -n 1 > ../.ansible.debian-version
+	cat ../.ansible.debian-version | sed -r "s/(.*)-.*/\1/g" > ../.ansible.version
+clean:
+	python setup.py clean
+tar: clean version
+	 cd .. && tar czvf ansible_`cat .ansible.version`.orig.tar.gz ansible --exclude="ansible/debian" --exclude="ansible/.git*"
+debuild: clean tar version
+	-debuild -S
+buildd: version debuild
+	echo "cd .. && scp $(NAME).debian.tar.gz $(NAME).dsc $(NAME)_source.build $(NAME)_source.changes ansible_$(VERSION).orig.tar.gz incoming@buildd:wheezy"
